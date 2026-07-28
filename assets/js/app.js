@@ -469,7 +469,7 @@ function renderDocRowHtml(row, theme = 'emerald') {
     const id = row.id || row[0] || "";
 
     const loggedUser = JSON.parse(localStorage.getItem('user')) || {};
-    const isPenilai = loggedUser.role === 'penilai';
+    const isPenilai = loggedUser.role !== 'admin';
     const styles = getGroupThemeStyles(theme);
 
     return `
@@ -590,7 +590,7 @@ function renderTable(filterType = 'all', filterValue = '') {
     }
 
     const loggedUser = JSON.parse(localStorage.getItem('user')) || {};
-    const isPenilai = loggedUser.role === 'penilai';
+    const isPenilai = loggedUser.role !== 'admin';
 
     groupsToRender.forEach((group, gIdx) => {
         const groupSection = document.createElement('div');
