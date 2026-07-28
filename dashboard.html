@@ -134,12 +134,12 @@
                         </span>
                         <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">Berkas Diunggah</h2>
                     </div>
-                    <button onclick="loadUserDocs()" class="w-10 h-10 rounded-xl bg-white hover:bg-blue-50 text-slate-400 hover:text-blue-600 border border-slate-200 shadow-sm flex items-center justify-center transition shrink-0" title="Segarkan Data">
+                    <button onclick="loadAdminData()" class="w-10 h-10 rounded-xl bg-white hover:bg-blue-50 text-slate-400 hover:text-blue-600 border border-slate-200 shadow-sm flex items-center justify-center transition shrink-0" title="Segarkan Data">
                         <i class="fas fa-sync-alt"></i>
                     </button>
                 </div>
                 <div class="p-4 sm:p-6 bg-slate-50/50 flex-1">
-                    <div id="userDocsList" class="space-y-3 max-h-[580px] overflow-y-auto pr-2">
+                    <div id="indicatorAccordionsContainer" class="space-y-3 max-h-[580px] overflow-y-auto pr-2">
                         <div class="p-8 text-center text-slate-400">
                             <i class="fas fa-circle-notch fa-spin text-3xl mb-3"></i>
                             <p class="text-sm font-semibold">Memuat dokumen...</p>
@@ -158,6 +158,26 @@
             </p>
         </div>
     </main>
+
+    <!-- Modal: File Preview -->
+    <div id="previewModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm transition-opacity">
+        <div class="bg-white w-full max-w-6xl h-[90vh] rounded-3xl overflow-hidden flex flex-col shadow-2xl border border-slate-200">
+            <div class="p-4 border-b flex justify-between items-center bg-slate-50 px-6 sm:px-8">
+                <div class="flex items-center space-x-3 truncate mr-4">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm shrink-0">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h4 id="modalTitle" class="font-extrabold text-base text-slate-800 truncate">Pratinjau Bukti Fisik</h4>
+                </div>
+                <button onclick="closeModal()" class="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-200/60 text-slate-600 hover:bg-red-500 hover:text-white transition group shrink-0">
+                    <i class="fas fa-times text-base"></i>
+                </button>
+            </div>
+            <div id="modalContent" class="flex-1 bg-slate-100 relative">
+                <!-- iframe injected here -->
+            </div>
+        </div>
+    </div>
 
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/app.js"></script>
@@ -183,52 +203,29 @@
                 window.location.href = 'index';
             } else {
                 document.getElementById('userDisplay').innerText = `Halo, ${user.name}`;
-                loadUserDocs();
+                loadAdminData();
             }
         };
 
-        async function loadUserDocs() {
-            const listEl = document.getElementById('userDocsList');
-            listEl.innerHTML = '<div class="p-8 text-center text-slate-400"><i class="fas fa-circle-notch fa-spin text-3xl mb-3"></i><p class="text-sm font-semibold">Memuat dokumen...</p></div>';
-            try {
-                const user = JSON.parse(localStorage.getItem('user'));
-                const response = await fetch(GAS_APP_URL + "?action=getData");
-                const result = await response.json();
-                if(result.status === 'success') {
-                    const userDocs = result.data.filter(d => d.pengupload === user.name);
-                    if(userDocs.length === 0) {
-                        listEl.innerHTML = '<div class="p-8 text-center text-slate-400"><i class="fas fa-folder-open text-4xl mb-3 text-slate-300"></i><p class="text-sm font-medium">Belum ada bukti fisik yang Anda unggah.</p></div>';
-                        return;
-                    }
-                    
-                    userDocs.reverse();
-                    let html = '';
-                    userDocs.forEach(doc => {
-                        const tgl = doc.tanggal ? new Date(doc.tanggal).toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'}) : '-';
-                        html += `
-                            <div class="bg-white border border-slate-200 rounded-xl p-4 hover:border-blue-300 transition shadow-sm group">
-                                <div class="flex items-start justify-between gap-3">
-                                    <div class="flex-1 min-w-0">
-                                        <h4 class="font-bold text-sm text-slate-800 leading-tight truncate" title="${doc.nama_dokumen}">${doc.nama_dokumen}</h4>
-                                        <p class="text-[10px] font-semibold text-slate-500 mt-1 uppercase tracking-wider truncate" title="${doc.kategori}">${doc.kategori.split('.')[1] || doc.kategori}</p>
-                                    </div>
-                                    <a href="${doc.link_file}" target="_blank" class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition shrink-0" title="Buka Dokumen">
-                                        <i class="fas fa-external-link-alt text-xs"></i>
-                                    </a>
-                                </div>
-                                <div class="mt-3 flex items-center justify-between text-[10px] text-slate-400 font-medium border-t border-slate-100 pt-2">
-                                    <span><i class="far fa-calendar-alt mr-1"></i> ${tgl}</span>
-                                    <span class="text-emerald-600"><i class="fas fa-check-circle mr-1"></i> Terkirim</span>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    listEl.innerHTML = html;
-                } else {
-                    listEl.innerHTML = '<div class="p-8 text-center text-red-500"><i class="fas fa-exclamation-circle text-3xl mb-3"></i><p class="text-sm font-medium">Gagal memuat data.</p></div>';
-                }
-            } catch (e) {
-                listEl.innerHTML = '<div class="p-8 text-center text-red-500"><i class="fas fa-wifi text-3xl mb-3"></i><p class="text-sm font-medium">Koneksi terputus.</p></div>';
+        function closeModal() {
+            document.getElementById('previewModal').classList.add('hidden');
+            document.getElementById('modalContent').innerHTML = '';
+        }
+
+        // Toggling accordion is handled by app.js (toggleIndicatorAccordion)
+        function toggleSubmenu(id, arrowId) {
+            const submenu = document.getElementById(id);
+            const arrow = document.getElementById(arrowId);
+            if (!submenu) return;
+            
+            if (submenu.classList.contains('active-submenu')) {
+                submenu.style.maxHeight = '0px';
+                submenu.classList.remove('active-submenu');
+                if (arrow) arrow.classList.remove('rotate-180');
+            } else {
+                submenu.style.maxHeight = submenu.scrollHeight + "px";
+                submenu.classList.add('active-submenu');
+                if (arrow) arrow.classList.add('rotate-180');
             }
         }
     </script>
