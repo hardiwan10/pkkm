@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Tim - PKKM MAN 1 Soppeng</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+        body, input, select, textarea, button, p, span, div { font-family: 'Open Sans', sans-serif; }
+        h1, h2, h3, h4, h5, h6, .brand-font { font-family: 'Open Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen selection:bg-emerald-500 selection:text-white">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-slate-900 via-emerald-900 to-slate-900 text-white shadow-lg border-b border-emerald-500/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <img src="assets/img/logo manesa.png" alt="Logo MAN 1 Soppeng" class="w-10 h-10 sm:w-11 sm:h-11 object-contain drop-shadow-md">
+                    <div>
+                        <span class="font-bold brand-font text-base sm:text-xl tracking-tight text-white">PKKM <span class="text-emerald-400">MANESA</span></span>
+                        <span class="block text-[9px] sm:text-[10px] text-slate-300 uppercase tracking-widest font-semibold -mt-1">Tim Penyusun Bukti Fisik</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3 sm:space-x-4">
+                    <div class="hidden md:flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
+                        <i class="fas fa-user-circle text-emerald-400"></i>
+                        <span id="userDisplay" class="font-medium text-xs sm:text-sm text-slate-200"></span>
+                    </div>
+                    <a href="index" class="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center" title="Ke Beranda">
+                        <i class="fas fa-home"></i><span class="hidden sm:inline ml-1.5">Beranda</span>
+                    </a>
+                    <button onclick="logout()" class="bg-red-500/20 hover:bg-red-500 text-red-300 hover:text-white border border-red-500/30 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center">
+                        <i class="fas fa-sign-out-alt mr-1.5"></i> <span class="hidden sm:inline">Keluar</span><span class="sm:hidden text-[10px]">OUT</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto pt-24 pb-12 sm:pt-28 sm:pb-16 px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200/80">
+            <div class="p-6 sm:p-8 bg-gradient-to-r from-emerald-50 via-teal-50/50 to-white border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 uppercase tracking-wider mb-2">
+                        <i class="fas fa-folder-plus"></i> Instrumen PKKM
+                    </span>
+                    <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">Unggah Bukti Fisik</h2>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Unggah berkas instrumen, laporan kegiatan, dan bukti fisik evaluasi kinerja.</p>
+                </div>
+                <div class="hidden sm:flex w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 items-center justify-center text-2xl font-bold">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+            </div>
+            
+            <div class="p-6 sm:p-8">
+                <form id="uploadForm" class="space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">1. Tugas Utama (Kategori PKKM)</label>
+                            <select id="docCategory" class="block w-full px-4 py-3 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition text-sm font-medium text-slate-800 outline-none">
+                                <option value="1. Usaha Pengembangan Madrasah">1. Usaha Pengembangan Madrasah</option>
+                                <option value="2. Pelaksanaan Tugas Manajerial">2. Pelaksanaan Tugas Manajerial</option>
+                                <option value="3. Pengembangan Kewirausahaan">3. Pengembangan Kewirausahaan</option>
+                                <option value="4. Supervisi kepada Guru & Tendik">4. Supervisi kepada Guru & Tendik</option>
+                                <option value="5. Hasil Kinerja Kepala Madrasah">5. Hasil Kinerja Kepala Madrasah</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">2. Indikator Kinerja (Subkategori)</label>
+                            <select id="docSubcategory" class="block w-full px-4 py-3 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition text-xs font-medium text-slate-800 outline-none">
+                                <!-- Populated dynamically by JS -->
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">3. Subindikator (Bukti Hasil Kerja)</label>
+                            <select id="docSubindicator" class="block w-full px-4 py-3 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition text-xs font-medium text-slate-800 outline-none">
+                                <!-- Populated dynamically by JS -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">4. Nama Bukti Fisik / Dokumen</label>
+                        <input type="text" id="docName" required class="block w-full px-4 py-3 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition text-sm font-medium text-slate-800 outline-none" placeholder="Contoh: SK Tim Pengembang Kurikulum dan Daftar Hadir Rapat 2026">
+                    </div>
+
+                    <div class="mt-2">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Pilih Berkas (PDF / Gambar)</label>
+                        <div id="dropZone" class="border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center hover:border-emerald-500 hover:bg-emerald-50/30 transition-all cursor-pointer group bg-slate-50/50">
+                            <input type="file" id="docFile" class="hidden" accept=".pdf,image/*" required>
+                            <div class="space-y-3">
+                                <div class="w-14 h-14 mx-auto rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-slate-400 group-hover:text-emerald-600 group-hover:scale-110 transition-all">
+                                    <i class="fas fa-file-upload text-2xl"></i>
+                                </div>
+                                <div class="text-slate-600 text-sm">
+                                    <span class="font-bold text-emerald-600">Klik untuk pilih bukti fisik</span> atau seret file ke sini
+                                </div>
+                                <p class="text-[11px] text-slate-400 font-medium">Format PDF, JPG, atau PNG (Maksimal 10MB)</p>
+                                <div id="fileNameDisplay" class="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-100 text-emerald-800 rounded-lg text-xs font-bold mt-2 hidden"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="progressContainer" class="hidden pt-2">
+                        <div class="w-full bg-slate-100 rounded-full h-3 p-0.5 overflow-hidden border border-slate-200">
+                            <div id="progressBar" class="bg-gradient-to-r from-emerald-500 to-teal-500 h-2 rounded-full w-0 transition-all duration-300"></div>
+                        </div>
+                        <p class="text-center text-xs font-bold text-emerald-700 mt-2.5 animate-pulse flex items-center justify-center gap-2">
+                            <i class="fas fa-spinner fa-spin"></i> Sedang mengunggah bukti fisik ke Google Drive sekolah...
+                        </p>
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-emerald-600/20 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed text-sm tracking-wide">
+                        <i class="fas fa-paper-plane mr-2"></i> KIRIM BUKTI FISIK
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="mt-6 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-start space-x-3.5">
+            <div class="bg-blue-50 p-2.5 rounded-xl text-blue-600 shrink-0 mt-0.5">
+                <i class="fas fa-info-circle text-lg"></i>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                <strong class="text-slate-800">Catatan Sistem:</strong> Bukti fisik yang Anda unggah akan secara otomatis diberi nama standar, disimpan dengan aman di folder Google Drive sekolah, dan dicatat dalam database Google Sheets PKKM MAN 1 Soppeng. Pastikan berkas sudah terverifikasi sebelum dikirim.
+            </p>
+        </div>
+    </main>
+
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script>
+        // UI Helpers
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('docFile');
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+
+        dropZone.onclick = () => fileInput.click();
+        
+        fileInput.onchange = (e) => {
+            if (e.target.files.length > 0) {
+                fileNameDisplay.innerHTML = `<i class="fas fa-check-circle text-emerald-600"></i> File terpilih: ${e.target.files[0].name}`;
+                fileNameDisplay.classList.remove('hidden');
+            }
+        };
+
+        // Check if user is logged in
+        window.onload = () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                window.location.href = 'index';
+            } else {
+                document.getElementById('userDisplay').innerText = `Halo, ${user.name}`;
+            }
+        };
+    </script>
+</body>
+</html>
